@@ -4,6 +4,8 @@ import Marketplace from '../abis/Marketplace.json'
 import './App.css';
 
 import Navbar from './Navbar';
+import Main from './Main';
+import Loader from './Loader';
 
 class App extends Component {
 
@@ -64,24 +66,27 @@ class App extends Component {
     const networkData = networks[networkId];
     if (networkData) {
       const address =networkData.address;
+      console.log(this.state)
       const marketplace = web3.eth.Contract(abi, address);
-      console.log(marketplace)
+      this.setState({ marketplace, loading: false })
+      console.log(this.state)
     } else {
       window.alert('Marketplace contract not deployed to detected network!')
     }
   }
 
   render() {
-    const { account } = this.state;
+    const { account, loading } = this.state;
     return (
       <div>
         <Navbar account={ account } />
         <div className="container-fluid mt-5">
           <div className="row">
-            <main role="main" className="col-lg-12 d-flex text-center">
-              <div className="content mr-auto ml-auto">
-                <h1>Art Marketplace</h1>
-              </div>
+            <main role="main" className="col-lg-12 d-flex">
+              { loading
+                ? <Loader />
+                : <Main />
+              }
             </main>
           </div>
         </div>
