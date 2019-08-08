@@ -62,7 +62,7 @@ contract Marketplace {
         require(_seller != msg.sender);
         // Transfer ownership to buyer
         _product.owner = msg.sender;
-        // Purchase producttruff
+        // Purchase product
         _product.purchased = true;
         // Update product
         products[_id] = _product;
