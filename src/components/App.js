@@ -8,7 +8,6 @@ import Main from './Main';
 import Loader from './Loader';
 
 class App extends Component {
-
   state = {
     account: '',
     productCount: 0,
@@ -20,8 +19,13 @@ class App extends Component {
   async componentWillMount() {
     await this.loadWeb3();
     await this.loadBlockchainData();
-    console.log(this.state)
   }
+
+  // async componentDidUpdate() {
+  //   await this.loadWeb3();
+  //   await this.loadBlockchainData();
+  //   console.log(this.state)
+  // }
 
   // loadWeb3 = async () => { // from https://medium.com/metamask/https-medium-com-metamask-breaking-change-injecting-web3-7722797916a8
   //   // Modern dapp browsers...
