@@ -39,10 +39,10 @@ contract Marketplace {
         // Require a price.
         require(_price > 0);
         // Make sure parameters are valid.
-        // Increment product count.
-        productCount++;
         // Create the product.
         products[productCount] = Product(productCount, _name, _price, msg.sender, false); // msg.sender is whoever makes the request
+        // Increment product count.
+        productCount++;
         // Trigger an event.
         emit ProductCreated(productCount, _name, _price, msg.sender, false);
     }

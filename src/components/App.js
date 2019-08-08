@@ -19,7 +19,8 @@ class App extends Component {
 
   async componentWillMount() {
     await this.loadWeb3();
-    await this.loadBlockchainData()
+    await this.loadBlockchainData();
+    console.log(this.state)
   }
 
   // loadWeb3 = async () => { // from https://medium.com/metamask/https-medium-com-metamask-breaking-change-injecting-web3-7722797916a8
@@ -68,8 +69,13 @@ class App extends Component {
       const address =networkData.address;
       const marketplace = web3.eth.Contract(abi, address);
       const productCount = await marketplace.methods.productCount().call()
-      console.log(productCount.toString())
-      this.setState({ marketplace, loading: false })
+      for (let i = 0; i < productCount; i++) {
+        const product = await marketplace.methods.products(i).call()
+        this.setState({
+          products: [...this.state.products, product]
+        })
+      }
+      this.setState({ productCount: productCount.toString(), marketplace, loading: false })
     } else {
       window.alert('Marketplace contract not deployed to detected network!')
     }
@@ -86,8 +92,18 @@ class App extends Component {
       })
   }
 
+  handlePurchase = (id, price) => {
+    const { account } = this.state
+    this.setState({ loading: true });
+    console.log(id, price)
+    this.state.marketplace.methods.purchaseProduct(id).send({ from: account, value: price })
+    .once('receipt', (receipt) => {
+      this.setState({ loading: false })
+    })
+  }
+
   render() {
-    const { account, loading } = this.state;
+    const { account, products, loading } = this.state;
     return (
       <div>
         <Navbar account={ account } />
@@ -96,7 +112,7 @@ class App extends Component {
             <main role="main" className="col-lg-12 d-flex">
               { loading
                 ? <Loader />
-                : <Main createProduct={this.createProduct} />
+                : <Main account={account} createProduct={this.createProduct} products={products} handlePurchase={this.handlePurchase} />
               }
             </main>
           </div>

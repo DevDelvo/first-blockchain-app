@@ -1,50 +1,69 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 const BuyProducts = (props) => {
-    const [state, setState] = useState({
-        name: '',
-        price: 0,
-    })
+    const { account, products, handlePurchase } = props;
 
-    const { name, price } = state;
-    const { createProduct } = props;
-
-    const handleChange = name => e => {
-        setState({...state, [name]: e.target.value});
-    }
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const convertedPrice = window.web3.utils.toWei(price.toString(), 'Ether')
-        createProduct(name, convertedPrice)
+    const renderProducts = (products) => {
+        return products.map((product, key) => {
+            const { id, name, price, owner } = product;
+            const convertedPrice = window.web3.utils.fromWei(price.toString(), 'Ether');
+            return account !== owner
+                    ? (
+                        <tr key={key}>
+                            <th scope="row">{id.toString()}</th>
+                            <td>{name}</td>
+                            <td>{convertedPrice} Eth</td>
+                            <td>{owner}</td>
+                            <td>
+                                {
+                                !product.purchased
+                                ? <button className="buyButton" onClick={() => {
+                                    handlePurchase(id, price)
+                                }}>
+                                    Buy
+                                </button>
+                                : null
+                                }
+                            </td>
+                        </tr>
+                      )
+                    : (
+                        <tr key={key}>
+                            <th scope="row">{id.toString()}</th>
+                            <td>{name}</td>
+                            <td>{convertedPrice} Eth</td>
+                            <td>{owner}</td>
+                            <td>
+                                {
+                                !product.purchased
+                                ? <button className="removeButton">
+                                    Remove
+                                </button>
+                                : null
+                                }
+                            </td>
+                        </tr>
+                      )
+        })
     }
 
     return (
         <div>
-            <h1>Add Product</h1>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group mr-sm-2">
-                        <input
-                            id="productName"
-                            type="text"
-                            className="form-control"
-                            placeholder="Product Name"
-                            onChange={handleChange('name')}
-                            required
-                        />
-                    </div>
-                    <div className="form-group mr-sm-2">
-                        <input
-                            id="productPrice"
-                            type="text"
-                            className="form-control"
-                            placeholder="Product Price"
-                            onChange={handleChange('price')}
-                            required
-                        />
-                    </div>
-                    <button type="submit" className="btn btn-primary">Add Product</button>
-                </form>
+            <h2>Buy Product</h2>
+            <table className="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Owner</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody id="productList">
+                    { renderProducts(products) }
+                </tbody>
+            </table>
         </div>
     )
 }
